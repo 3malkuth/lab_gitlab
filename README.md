@@ -10,9 +10,10 @@ python3.12 -m pip install --user pipenv
 pipenv install
 ```
 
-## Tests, Type safety and Linting
+## Development Environment: Tests, Type safety, Linting...
 
 ```
+pipenv install --dev
 pipenv run pytest -v
 mypy .                 # this will use the ignores etc. from mypy.ini
 ```
