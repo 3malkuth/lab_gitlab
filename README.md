@@ -1,4 +1,4 @@
-# pylab_gitlab
+# lab_gitlab
 
 ## Environment
 
