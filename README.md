@@ -19,12 +19,17 @@ poetry self add poetry-plugin-shell
 ```
 - Setup GitLab API token and other environment variables:
   - Create a personal access token in GitLab with `api` scope.
-  - Set the token as an environment variable:
+  - Set the token as an environment variable
+- Example .ENV bash script you can use to set up your environment variables
 ```
+#!/bin/bash
+# To add these to your current shell run:
+# source .ENV
+
 export GITLAB_API_TOKEN=your_token_here
-export GITLAB_URL=your_gitlab_url_here
-export GITLAB_PROJECT_PATH=your_project_path_here
-export GITLAB_LABELS=your_labels_here
+export GITLAB_URL=your_gitlab_url_here # no trailing slash
+export GITLAB_PROJECT_PATH=your_project_path_here # no start / trailing slash
+export GITLAB_LABELS=your_labels_here # use commas to separate multiple labels
 ```
 
 ## Development Environment: Tests, Type safety, Linting...
