@@ -1,5 +1,5 @@
 [MASTER]
-ignore=tests
+# ignore=tests
 load-plugins=pylint.extensions.docparams
 
 [MESSAGES CONTROL]
