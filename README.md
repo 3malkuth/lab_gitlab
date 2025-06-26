@@ -30,6 +30,7 @@ export GITLAB_API_TOKEN=your_token_here
 export GITLAB_URL=your_gitlab_url_here # no trailing slash
 export GITLAB_PROJECT_PATH=your_project_path_here # no start / trailing slash
 export GITLAB_LABELS=your_labels_here # use commas to separate multiple labels
+export GITLAB_SORT=asc # or desc
 ```
 
 ## Development Environment: Tests, Type safety, Linting...

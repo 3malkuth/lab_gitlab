@@ -14,14 +14,19 @@ def fetch_issues(
         labels: List[str],
         gl_token: str,
         gl_url: str,
+        gl_sort: str = "desc",
 ) -> List[Issue]:
     """
     Connects to GitLab and retrieves all issues for the given project (by ID or path)
-    that have all of the specified labels.
+    that have all of the specified labels, sorted ascendingly or descendingly.
     """
     gl = gitlab.Gitlab(gl_url, private_token=gl_token)
     project_obj = gl.projects.get(project)
-    issues = project_obj.issues.list(labels=labels, all=True)
+    issues = project_obj.issues.list(
+        labels=labels,
+        all=True,
+        sort=gl_sort,
+    )
     return [Issue(i.title, i.description or "") for i in issues]
 
 
@@ -55,6 +60,11 @@ if __name__ == "__main__":
     labels_env = os.getenv("GITLAB_LABELS", "")
     labels = [lbl.strip() for lbl in labels_env.split(",") if lbl.strip()]
 
+    # New: sort order (asc or desc)
+    sort_order = os.getenv("GITLAB_SORT", "desc").lower()
+    if sort_order not in ("asc", "desc"):
+        raise RuntimeError(f"Invalid GITLAB_SORT value: {sort_order!r}, must be 'asc' or 'desc'")
+
     # --- fetch & render ---
-    issues = fetch_issues(project, labels, token, url)
+    issues = fetch_issues(project, labels, token, url, sort_order)
     print(issues_to_markdown(issues))
