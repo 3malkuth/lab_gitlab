@@ -12,6 +12,16 @@ pipenv install
 
 ## Development Environment: Tests, Type safety, Linting...
 
+**Setup environment variables in a .ENV file**:
+- Note this file is ignored in .gitignore
+
+```
+CI_PROJECT_PATH=...
+
+```
+
+**Setup software dependencies:**
+
 ```
 pipenv install --dev
 pipenv run pytest -v
