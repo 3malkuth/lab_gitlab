@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "lab_gitlab"
+version = "0.1.0"
+description = "Fetch GitLab issues by label and render them to Markdown"
+authors = ["3malkuth <3malkuth@example.com>"]
+readme = "README.md"
+packages = [
+    { include = "issue_fetcher", from = "src" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+python-gitlab = "^6.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pylint = "^3.3.7"
+mypy = "^1.16.1"
+pytest = "^8.4.1"
+
+[build-system]
+requires = ["poetry-core>=1.4.0"]
+build-backend = "poetry.core.masonry.api"

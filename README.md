@@ -1,29 +1,56 @@
 # lab_gitlab
 
+## Goals
+- Fetch GitLab issues by label and output them as a single Markdown file.
+
+
 ## Environment
 
-- Assuming you have installed python 3.12 on a linux machine
+- Prerequisites: Python 3.12, Poetry, GitLab API token
+- Setup Poetry:
+```
+curl -sSL https://install.python-poetry.org | python3.12 -
+export PATH="$HOME/.local/bin:$PATH" # write this into your .bashrc file
+poetry install
+
+# If you want to use the poetry shell, you need to explicityl install it
+poetry self add poetry-plugin-shell
 
 ```
-python3.12 -m ensurepip --upgrade
-python3.12 -m pip install --user pipenv
-pipenv install
+- Setup GitLab API token and other environment variables:
+  - Create a personal access token in GitLab with `api` scope.
+  - Set the token as an environment variable:
+```
+export GITLAB_API_TOKEN=your_token_here
+export GITLAB_URL=your_gitlab_url_here
+export GITLAB_PROJECT_PATH=your_project_path_here
+export GITLAB_LABELS=your_labels_here
 ```
 
 ## Development Environment: Tests, Type safety, Linting...
-
-**Setup environment variables in a .ENV file**:
-- Note this file is ignored in .gitignore
-
+- Install dependencies
 ```
-CI_PROJECT_PATH=...
+# Access the virtual shell
+# https://python-poetry.org/docs/managing-environments/#activating-the-environment
+poetry shell # activates the environment in a new subshell and updates your prompt
 
-```
+poetry env activate # just sets the environment path internally, meant more for scripting or IDE integration.
+# it just tells Poetry which environment to associate with your project.
+# So running poetry env activate by itself doesn't actually "enter" the environment — that's why you don't see a prompt change.
 
-**Setup software dependencies:**
+# Check if using env python
+which python
 
-```
-pipenv install --dev
-pipenv run pytest -v
-mypy .                 # this will use the ignores etc. from mypy.ini
+# Disable the virtual environment and use the system based python env
+poetry env use /usr/bin/python3.12 # direct path to system's python
+poetry env use system # this should work, but I didn't get it to work
+
+# Run pylint
+poetry run pylint src/issue_fetcher
+
+# Check type safety
+poetry run mypy src/issue_fetcher
+
+# Run tests
+poetry run pytest
 ```
