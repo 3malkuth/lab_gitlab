@@ -17,7 +17,7 @@ def test_issues_to_markdown_single() -> None:
 def test_fetch_issues(monkeypatch) -> None:
     # Prepare dummy data
     class DummyIssueObj:
-        def __init__(self, title: str, description: str):
+        def __init__(self, title: str, description: str) -> None:
             self.title = title
             self.description = description
 
@@ -25,26 +25,38 @@ def test_fetch_issues(monkeypatch) -> None:
 
     # Mock project.issues.list(...)
     class DummyProject:
-        def __init__(self):
+        def __init__(self) -> None:
             self.issues = self
-        def list(self, labels, all, sort):
+
+        def list(
+                self,
+                labels,
+                order_by,
+                sort,
+                all
+        ):
             # verify parameters
             assert labels == ["a", "b"]
-            assert all is True
+            assert order_by == "updated_at"
             assert sort == "asc"
+            assert all is True
             return dummy_issues
 
     # Mock Gitlab client
     class DummyGitlab:
-        def __init__(self, url: str, private_token: str):
+        def __init__(self, url: str, private_token: str) -> None:
             assert url == "https://example.com"
             assert private_token == "secrettoken"
             self.projects = self
-        def get(self, project):
+
+        def get(self, project) -> DummyProject:
             assert project == "group/proj"
             return DummyProject()
 
-    monkeypatch.setattr("issue_fetcher.fetcher.gitlab.Gitlab", DummyGitlab)
+    monkeypatch.setattr(
+        "issue_fetcher.fetcher.gitlab.Gitlab",
+        DummyGitlab
+    )
 
     # Call fetch_issues with our dummy values
     issues = fetch_issues(
@@ -52,7 +64,8 @@ def test_fetch_issues(monkeypatch) -> None:
         labels=["a", "b"],
         gl_token="secrettoken",
         gl_url="https://example.com",
-        gl_sort="asc",
+        order_by="updated_at",
+        sort="asc",
     )
 
     # Verify we got back Issue instances with correct data

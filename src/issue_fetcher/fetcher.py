@@ -14,18 +14,31 @@ def fetch_issues(
         labels: List[str],
         gl_token: str,
         gl_url: str,
-        gl_sort: str = "desc",
+        order_by: str = "created_at",
+        sort: str = "desc",
 ) -> List[Issue]:
     """
-    Connects to GitLab and retrieves all issues for the given project (by ID or path)
-    that have all of the specified labels, sorted ascendingly or descendingly.
+    Connects to GitLab and retrieves all issues for the given project that
+    have all of the specified labels, ordered as requested.
+
+    Args:
+        project_id: The GitLab project ID or path.
+        labels: A list of label names to filter issues by.
+        gl_token: Personal access token with API scope.
+        gl_url: Base URL of the GitLab instance (default: gitlab.com).
+        order_by: Field to order by (e.g., 'created_at', 'updated_at').
+        sort: Sort direction, either 'asc' or 'desc'.
+
+    Returns:
+        A list of Issue objects.
     """
     gl = gitlab.Gitlab(gl_url, private_token=gl_token)
     project_obj = gl.projects.get(project)
     issues = project_obj.issues.list(
         labels=labels,
+        order_by=order_by,
         all=True,
-        sort=gl_sort,
+        sort=sort,
     )
     return [Issue(i.title, i.description or "") for i in issues]
 
@@ -60,11 +73,20 @@ if __name__ == "__main__":
     labels_env = os.getenv("GITLAB_LABELS", "")
     labels = [lbl.strip() for lbl in labels_env.split(",") if lbl.strip()]
 
+    # Read order_by field (default: created_at)
+    order_by = os.getenv("GITLAB_ORDER_BY", "created_at").lower()
+    # Optionally enforce allowed values
+    valid_order_fields = {"created_at", "updated_at", "title"}
+    if order_by not in valid_order_fields:
+        raise RuntimeError(
+            f"Invalid GITLAB_ORDER_BY value: {order_by!r}, must be one of {', '.join(valid_order_fields)}"
+        )
+
     # New: sort order (asc or desc)
     sort_order = os.getenv("GITLAB_SORT", "desc").lower()
     if sort_order not in ("asc", "desc"):
         raise RuntimeError(f"Invalid GITLAB_SORT value: {sort_order!r}, must be 'asc' or 'desc'")
 
     # --- fetch & render ---
-    issues = fetch_issues(project, labels, token, url, sort_order)
+    issues = fetch_issues(project, labels, token, url, order_by, sort_order)
     print(issues_to_markdown(issues))
