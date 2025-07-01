@@ -1,4 +1,6 @@
 import pytest
+from pytest import MonkeyPatch
+from typing import List
 from issue_fetcher.fetcher import Issue, issues_to_markdown, fetch_issues
 
 
@@ -14,7 +16,7 @@ def test_issues_to_markdown_single() -> None:
     assert md_lines[2] == "- Expected vs actual"
 
 
-def test_fetch_issues(monkeypatch) -> None:
+def test_fetch_issues(monkeypatch: MonkeyPatch) -> None:
     # Prepare dummy data
     class DummyIssueObj:
         def __init__(self, title: str, description: str) -> None:
@@ -30,11 +32,11 @@ def test_fetch_issues(monkeypatch) -> None:
 
         def list(
                 self,
-                labels,
-                order_by,
-                sort,
-                all
-        ):
+                labels: List[str],
+                order_by: str,
+                sort: str,
+                all: bool
+        ) -> List[DummyIssueObj]:
             # verify parameters
             assert labels == ["a", "b"]
             assert order_by == "updated_at"
@@ -49,7 +51,7 @@ def test_fetch_issues(monkeypatch) -> None:
             assert private_token == "secrettoken"
             self.projects = self
 
-        def get(self, project) -> DummyProject:
+        def get(self, project: str) -> DummyProject:
             assert project == "group/proj"
             return DummyProject()
 

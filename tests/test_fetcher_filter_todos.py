@@ -1,4 +1,6 @@
 import pytest
+from pytest import MonkeyPatch
+from typing import List
 from issue_fetcher.fetcher_filter_todos import Issue, issues_to_markdown, fetch_issues, filter_todos
 
 
@@ -44,7 +46,7 @@ def test_filter_todos_only_unchecked() -> None:
 
 
 
-def test_fetch_issues(monkeypatch) -> None:
+def test_fetch_issues(monkeypatch: MonkeyPatch) -> None:
     # Prepare dummy GitLab issue objects
     class DummyIssueObj:
         def __init__(self, title: str, description: str) -> None:
@@ -60,11 +62,11 @@ def test_fetch_issues(monkeypatch) -> None:
 
         def list(
                 self,
-                labels,
-                order_by,
-                sort,
-                all
-        ):
+                labels: List[str],
+                order_by: str,
+                sort: str,
+                all: bool
+        ) -> List[DummyIssueObj]:
             assert labels == ["a", "b"]
             assert order_by == "updated_at"
             assert sort == "asc"
@@ -78,7 +80,7 @@ def test_fetch_issues(monkeypatch) -> None:
             assert private_token == "secrettoken"
             self.projects = self
 
-        def get(self, project) -> DummyProject:
+        def get(self, project: str) -> DummyProject:
             assert project == "group/proj"
             return DummyProject()
 
