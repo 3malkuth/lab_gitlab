@@ -13,6 +13,6 @@ poetry run mypy .
 
 echo ""
 echo "Running pytest..."
-poetry run pytest
+poetry run pytest -vvvvvv
 
 cd scripts
