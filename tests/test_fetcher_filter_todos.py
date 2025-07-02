@@ -1,7 +1,7 @@
 import pytest
 from pytest import MonkeyPatch
 from typing import List
-from issue_fetcher.fetcher_filter_todos import Issue, issues_to_markdown, fetch_issues, filter_todos
+from issue_fetcher.fetcher_filter_todos import Issue, issues_to_markdown, fetch_issues, filter_todos_and_headings
 
 
 def test_issues_to_markdown_empty() -> None:
@@ -26,24 +26,26 @@ def test_issues_to_markdown_single() -> None:
         "* [ ] second task",
     ]
 
-
-def test_filter_todos_only_unchecked() -> None:
-    # filter_todos should return only unchecked checkbox lines
+def test_filter_todos_and_headings() -> None:
+    # filter_todos_and_headings should return both unchecked checkbox lines and headings
     description = '''
-        Line before
+        # Main Heading
         - [ ] unchecked task
         * [ ] another unchecked
+        ## Subheading
         - [x] checked task
         * [x] another checked
-        No list here
+        # Another Heading
     '''
     issue = Issue("Test", description)
-    todos = filter_todos(issue)
-    assert todos == [
+    todos_and_headings = filter_todos_and_headings(issue)
+    assert todos_and_headings == [
+        "# Main Heading",
         "- [ ] unchecked task",
         "* [ ] another unchecked",
+        "## Subheading",
+        "# Another Heading"
     ]
-
 
 
 def test_fetch_issues(monkeypatch: MonkeyPatch) -> None:
