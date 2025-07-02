@@ -55,7 +55,7 @@ def issues_to_markdown(issues: List[Issue]) -> str:
         # Issue heading
         md_lines.append(f"### {issue.title}")
         # Extract only todo (markdown checkboxes) and heading lines
-        todos_and_headings = filter_todos_and_headings(issue)
+        todos_and_headings = filter_headings_sections_todos(issue)
         # Add each todo and heading line
         md_lines.extend(todos_and_headings)
         # Blank line after each issue
@@ -63,28 +63,32 @@ def issues_to_markdown(issues: List[Issue]) -> str:
     return "\n".join(md_lines)
 
 
-def filter_todos_and_headings(issue: Issue) -> List[str]:
+def filter_headings_sections_todos(issue: Issue) -> List[str]:
     """
     Extracts both unchecked markdown checkbox lines and markdown heading lines
     from an issue description.
 
     Returns a list of todo and heading strings without leading/trailing whitespace.
     """
-    todos_and_headings: List[str] = []
+    headings_sections_todos: List[str] = []
 
     # Regex patterns
     todo_pattern = r"^\s*([-*]\s\[ \]\s.*)"  # Unchecked checkbox lines
     heading_pattern = r"^\s*#{1,6}\s.*"  # Matches headings of all levels (1 to 6 '#')
+    section_pattern = r"^\s*\*\*.*:\*\*$" # Matches section headings like "**Section:**"
+
 
     for line in issue.description.splitlines():
         # Check for unchecked todo checkbox lines
         if re.match(todo_pattern, line):
-            todos_and_headings.append(line.strip())
+            headings_sections_todos.append(line.strip())
         # Check for markdown heading lines
         elif re.match(heading_pattern, line):
-            todos_and_headings.append(line.strip())
+            headings_sections_todos.append(line.strip())
+        elif re.match(section_pattern, line):
+            headings_sections_todos.append(line.strip())
 
-    return todos_and_headings
+    return headings_sections_todos
 
 
 if __name__ == "__main__":
